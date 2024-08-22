@@ -3,6 +3,8 @@ var fs = require('fs');
 var formidable = require('formidable');
 const { exec } = require("child_process");
 var path = require('path');
+const pathToAHK = require('ahk2.exe');
+
 
 const { finished } = require('stream');
 const { promisify } = require('util');
@@ -52,7 +54,7 @@ http.createServer( function(req, res) {
 			{
 				return res.end();
 			}
-			exec('"Ahk2exe.exe" /base AutoHotkey64.exe /in ' + oldpath + ' /out ' + newpath, function(err, stdout, stderr){
+			exec('"' + pathToAHK.exe +'" /base ' + pathToAHK.base + ' /in ' + oldpath + ' /out ' + newpath, function(err, stdout, stderr){
 				if (!err){
 					console.log('Generated ' + name);
 					sendFile(newpath, name);

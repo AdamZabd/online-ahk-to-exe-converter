@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "ahk2.exe": "^1.0.1",
     "formidable": "^3.5.1"
   }
 }
