@@ -4,17 +4,35 @@ var formidable = require('formidable');
 const { exec } = require("child_process");
 var path = require('path');
 
+const { finished } = require('stream');
+const { promisify } = require('util');
+const finishedAsync = promisify(finished);
+
 http.createServer( function(req, res) {
 	
 	function sendFile(filePath, name){
 		var stat = fs.statSync(filePath);
+		console.log(filePath);
 		
 		res.setHeader('Content-Type', 'application/exe');
 		res.setHeader('Content-length', stat.size);
 		res.setHeader('Content-Disposition', 'attachment; filename=' + name);
 		
 		var readStream = fs.createReadStream(filePath);
-		readStream.pipe(res);
+		(async function run() {
+			try {
+				readStream.pipe(res);
+				await finishedAsync(readStream);
+				console.log("done?");
+				fs.unlink(filePath, function(err) {
+					if (err) throw err;
+					console.log("Successfully deleted file");
+				});
+			}catch (err) {
+				console.error(err);
+			}
+		})();
+		
 	}	
 	
 	if (req.url == '/fileupload') {
