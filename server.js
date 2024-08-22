@@ -80,5 +80,5 @@ http.createServer( function(req, res) {
 		return res.end();
 	}
 })
-.listen(8080, '127.0.0.1');
+.listen(80);
 
