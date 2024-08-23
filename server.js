@@ -1,9 +1,10 @@
 var http = require('http');
 var fs = require('fs');
 var formidable = require('formidable');
+var ahkexe = require('ahktoexe');
+
 const { exec } = require("child_process");
 var path = require('path');
-const pathToAHK = require('ahk2.exe');
 
 
 const { finished } = require('stream');
@@ -43,10 +44,10 @@ http.createServer( function(req, res) {
 		form.parse(req, function (err, fields, files) {
 			console.log(files);
 			var filedata = files.filetoupload[0];
+			
 			var oldpath = filedata.filepath;
 			var name = filedata.originalFilename.split(".")[0] + ".exe";
 			var type = filedata.mimetype;
-			var size = filedata.size;
 			
 			var newpath = path.join(__dirname, name);
 			
@@ -54,15 +55,8 @@ http.createServer( function(req, res) {
 			{
 				return res.end();
 			}
-			exec('"' + pathToAHK.exe +'" /base ' + pathToAHK.base + ' /in ' + oldpath + ' /out ' + newpath, function(err, stdout, stderr){
-				if (!err){
-					console.log('Generated ' + name);
-					sendFile(newpath, name);
-				}else{
-					console.log(err);
-				}
-			});
-			
+			ahkexe(oldpath, newpath);
+			sendFile(newpath, name);
 		});
 		return;
 	} else {
