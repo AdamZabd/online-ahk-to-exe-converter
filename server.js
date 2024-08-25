@@ -58,6 +58,7 @@ http.createServer( function(req, res) {
 			
 			(async function() {
 				await ahkexe(oldpath, newpath);
+				await checkExistsWithTimeout(newpath, 60000);
 				sendFile(newpath, name);
 			})()
 		});
