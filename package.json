@@ -1,4 +1,9 @@
 {
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js"
+	},
+
   "dependencies": {
     "ahktoexe": "^1.0.0",
     "formidable": "^3.5.1"
