@@ -47,20 +47,18 @@ http.createServer( function(req, res) {
 			
 			var oldpath = filedata.filepath;
 			var name = filedata.originalFilename.split(".")[0] + ".exe";
-			var type = filedata.mimetype;
+			var type = filedata.originalFilename.split(".")[1];
 			
 			var newpath = path.join(__dirname, name);
 			
-			if (type != "text/plain")
+			if ((type != "txt") && (type != "ahk"))
 			{
 				return res.end();
 			}
-			ahkexe(oldpath, newpath);
 			
 			(async function() {
-			const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-			await sleep(5000);
-			sendFile(newpath, name);
+				await ahkexe(oldpath, newpath);
+				sendFile(newpath, name);
 			})()
 		});
 		return;
@@ -83,3 +81,30 @@ http.createServer( function(req, res) {
 })
 .listen(80);
 
+function checkExistsWithTimeout(filePath, timeout) {
+    return new Promise(function (resolve, reject) {
+
+        var timer = setTimeout(function () {
+            watcher.close();
+            reject(new Error('File did not exists and was not created during the timeout.'));
+        }, timeout);
+
+        fs.access(filePath, fs.constants.R_OK, function (err) {
+            if (!err) {
+                clearTimeout(timer);
+                watcher.close();
+                resolve();
+            }
+        });
+
+        var dir = path.dirname(filePath);
+        var basename = path.basename(filePath);
+        var watcher = fs.watch(dir, function (eventType, filename) {
+            if (eventType === 'rename' && filename === basename) {
+                clearTimeout(timer);
+                watcher.close();
+                resolve();
+            }
+        });
+    });
+}
