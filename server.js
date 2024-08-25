@@ -56,12 +56,12 @@ http.createServer( function(req, res) {
 				return res.end();
 			}
 			ahkexe(oldpath, newpath);
+			
 			(async function() {
 			const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-			await sleep(2000);
-			})()
-			
+			await sleep(5000);
 			sendFile(newpath, name);
+			})()
 		});
 		return;
 	} else {
